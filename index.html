@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>cogie0806ニュース</title>
     <style>
-     /* 💡 リンクボタンのデザイン */
+        /* 💡 リンクボタンのデザイン */
         .link-btn {
             display: block;
             text-align: center;
@@ -26,9 +26,17 @@
         .ai-btn:hover {
             background-color: #2563eb;
         }
+        .news-box {
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
 
-
-    <div>cogie0806ニュース</div>
+    <h1>cogie0806ニュース</h1>
     <div class="nav-bar">
          <a class="link-btn ai-btn" href="https://cogie0806.github.io/" target="_blank">ホームページへ戻る</a>
     </div>
@@ -55,7 +63,7 @@
                 });
         }
 
-        // 実行（画像通りのファイル名「nesw1.txt」「nesw2.txt」に指定しています）
+        // 実行（ファイル名は元のコードのまま指定しています）
         loadNews('nesw1.txt', 'news1');
         loadNews('nesw2.txt', 'news2');
     </script>
