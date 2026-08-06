@@ -1,25 +1,79 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>cogie0806ニュース</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cogie0806ニュース</title>
+    <style>
+        /* 簡単なデザイン調整 */
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .btn-home {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .btn-home:hover {
+            background-color: #0056b3;
+        }
+        .news-section {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            white-space: pre-wrap; /* テキストの改行をそのまま表示 */
+        }
+    </style>
 </head>
 <body>
 
-  <p>
-    <a href="https://cogie0806.github.io/" style="background-color: #8A2BE2; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; display: inline-block;">
-      ホームページに戻る
-    </a>
-  </p>
+    <!-- 1番上：タイトル -->
+    <h1>cogie0806ニュース</h1>
 
-  <ul>
-    <li>
-      <a href="news1.txt">ニュース1</a>
-    </li>
-    <li>
-      <a href="news2.txt">news2.txt</a>
-    </li>
-  </ul>
+    <!-- 2番上：ホームページへ戻るボタン -->
+    <a href="https://cogie0806.github.io/" class="btn-home">← ホームページへ戻る</a>
+
+    <!-- ニュース1のらん -->
+    <h2>ニュース 1</h2>
+    <div id="news1" class="news-section">ニュース1を読み込んでいます...</div>
+
+    <!-- ニュース2のらん -->
+    <h2>ニュース 2</h2>
+    <div id="news2" class="news-section">ニュース2を読み込んでいます...</div>
+
+    <script>
+        // 外部のテキストファイルを読み込んで埋め込む関数
+        async function loadNews(fileUrl, elementId) {
+            try {
+                const response = await fetch(fileUrl);
+                if (!response.ok) {
+                    throw new Error('ファイルの読み込みに失敗しました');
+                }
+                const text = await response.text();
+                document.getElementById(elementId).innerText = text;
+            } catch (error) {
+                document.getElementById(elementId).innerText = 'ニュースの読み込みに失敗しました。';
+                console.error(error);
+            }
+        }
+
+        // ページが読み込まれたら、news1.txt と news2.txt を読み込む
+        // ※HTMLファイルと同じフォルダに .txt ファイルを置いてください
+        window.addEventListener('DOMContentLoaded', () => {
+            loadNews('news1.txt', 'news1');
+            loadNews('news2.txt', 'news2');
+        });
+    </script>
 
 </body>
 </html>
