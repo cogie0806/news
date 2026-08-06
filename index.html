@@ -2,9 +2,23 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <!-- 💡 スマホ表示を最適化する（レスポンシブ対応）タグを追加 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>cogie0806ニュース</title>
+    
+    <!-- 💡 アイコン設定を正しい位置（styleの外）に移動し、ファイルを指定 -->
+    <link rel="icon" href="cogie0806.jpg" type="image/jpeg">
+
     <style>
-            <link rel="icon" href="cogie0806.jpg" type="image/jpeg">
+        /* 💡 スマホの画面幅からはみ出さないように基本設定を調整 */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 10px;
+            font-family: sans-serif;
+        }
+        
         /* 💡 リンクボタンのデザイン */
         .link-btn {
             display: block;
@@ -12,7 +26,7 @@
             background-color: #10b981; 
             color: white;
             text-decoration: none; 
-            padding: 8px;
+            padding: 12px; /* スマホでタップしやすいように少し太くしました */
             margin: 8px 0;
             border-radius: 4px;
             font-weight: bold;
@@ -28,10 +42,11 @@
             background-color: #2563eb;
         }
         .news-box {
-            padding: 10px;
+            padding: 15px; /* スマホで見やすい余白に調整 */
             border: 1px solid #ccc;
             margin-bottom: 20px;
             background-color: #f9f9f9;
+            word-wrap: break-word; /* 長いテキストの自動改行対応 */
         }
     </style>
 </head>
@@ -39,7 +54,7 @@
 
     <h1>cogie0806ニュース</h1>
     <div class="nav-bar">
- <a class="link-btn ai-btn" href="https://cogie0806.github.io/news/" target="_blank">ホームページへ戻る</a>
+        <a class="link-btn ai-btn" href="https://github.io" target="_blank">ホームページへ戻る</a>
     </div>
 
     <h2>ニュース１</h2>
@@ -47,7 +62,8 @@
 
     <h2>ニュース２</h2>
     <div id="news2" class="news-box">読み込み中...</div>
-        <h2>ニュース3</h2>
+    
+    <h2>ニュース3</h2>
     <div id="news3" class="news-box">読み込み中...</div>
 
     <script>
@@ -66,9 +82,10 @@
                 });
         }
 
-        // 実行（news1.txt と news2.txt と news3 に修正しました）
+        // 実行（ニュース1〜3のすべてを読み込み）
         loadNews('news1.txt', 'news1');
         loadNews('news2.txt', 'news2');
+        loadNews('news3.txt', 'news3');
     </script>
 
 </body>
