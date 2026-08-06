@@ -2,77 +2,62 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>cogie0806ニュース</title>
     <style>
-        /* 簡単なデザイン調整 */
-        body {
-            font-family: sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .btn-home {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
+     /* 💡 リンクボタンのデザイン */
+        .link-btn {
+            display: block;
+            text-align: center;
+            background-color: #10b981; 
             color: white;
-            text-decoration: none;
-            border-radius: 5px;
+            text-decoration: none; 
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 4px;
             font-weight: bold;
-            margin-bottom: 30px;
+            font-size: 14px;
         }
-        .btn-home:hover {
-            background-color: #0056b3;
+        .link-btn:hover {
+            background-color: #059669; 
         }
-        .news-section {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            white-space: pre-wrap; /* テキストの改行をそのまま表示 */
+        .ai-btn {
+            background-color: #3b82f6;
         }
-    </style>
-</head>
-<body>
+        .ai-btn:hover {
+            background-color: #2563eb;
+        }
 
-    <!-- 1番上：タイトル -->
-    <h1>cogie0806ニュース</h1>
 
-    <!-- 2番上：ホームページへ戻るボタン -->
-    <a href="https://cogie0806.github.io/" class="btn-home">← ホームページへ戻る</a>
+    <div>cogie0806ニュース</div>
+    <div class="nav-bar">
+         <a class="link-btn ai-btn" href="https://cogie0806.github.io/" target="_blank">ホームページへ戻る</a>
+    </div>
 
-    <!-- ニュース1のらん -->
-    <h2>ニュース 1</h2>
-    <div id="news1" class="news-section">ニュース1を読み込んでいます...</div>
+    <h2>ニュース１</h2>
+    <div id="news1" class="news-box">読み込み中...</div>
 
-    <!-- ニュース2のらん -->
-    <h2>ニュース 2</h2>
-    <div id="news2" class="news-section">ニュース2を読み込んでいます...</div>
+    <h2>ニュース２</h2>
+    <div id="news2" class="news-box">読み込み中...</div>
 
     <script>
-        // 外部のテキストファイルを読み込んで埋め込む関数
-        async function loadNews(fileUrl, elementId) {
-            try {
-                const response = await fetch(fileUrl);
-                if (!response.ok) {
-                    throw new Error('ファイルの読み込みに失敗しました');
-                }
-                const text = await response.text();
-                document.getElementById(elementId).innerText = text;
-            } catch (error) {
-                document.getElementById(elementId).innerText = 'ニュースの読み込みに失敗しました。';
-                console.error(error);
-            }
+        // テキストファイルを読み込んで表示する関数
+        function loadNews(file, elementId) {
+            fetch(file)
+                .then(response => {
+                    if (!response.ok) throw new Error('ファイルが見つかりません');
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById(elementId).innerText = data;
+                })
+                .catch(error => {
+                    document.getElementById(elementId).innerText = "ニュースの読み込みに失敗しました。";
+                });
         }
 
-        // ページが読み込まれたら、news1.txt と news2.txt を読み込む
-        // ※HTMLファイルと同じフォルダに .txt ファイルを置いてください
-        window.addEventListener('DOMContentLoaded', () => {
-            loadNews('news1.txt', 'news1');
-            loadNews('news2.txt', 'news2');
-        });
+        // 実行（画像通りのファイル名「nesw1.txt」「nesw2.txt」に指定しています）
+        loadNews('nesw1.txt', 'news1');
+        loadNews('nesw2.txt', 'news2');
     </script>
 
 </body>
