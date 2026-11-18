@@ -2,91 +2,266 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <!-- 💡 スマホ表示を最適化する（レスポンシブ対応）タグを追加 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cogie0806ニュース</title>
+    <title>cogie0806ニュース</title><link rel="icon" href="ファビコン.png" type="image/png">
     
-    <!-- 💡 アイコン設定を正しい位置（styleの外）に移動し、ファイルを指定 -->
-    <link rel="icon" href="cogie0806.jpg" type="image/jpeg">
-
-    <style>
-        /* 💡 スマホの画面幅からはみ出さないように基本設定を調整 */
-        html, body {
-            max-width: 100%;
-            overflow-x: hidden;
-            margin: 0;
-            padding: 10px;
-            font-family: sans-serif;
-        }
-        
-        /* 💡 リンクボタンのデザイン */
-        .link-btn {
-            display: block;
-            text-align: center;
-            background-color: #10b981; 
-            color: white;
-            text-decoration: none; 
-            padding: 12px; /* スマホでタップしやすいように少し太くしました */
-            margin: 8px 0;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .link-btn:hover {
-            background-color: #059669; 
-        }
-        .ai-btn {
-            background-color: #3b82f6;
-        }
-        .ai-btn:hover {
-            background-color: #2563eb;
-        }
-        .news-box {
-            padding: 15px; /* スマホで見やすい余白に調整 */
-            border: 1px solid #ccc;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
-            word-wrap: break-word; /* 長いテキストの自動改行対応 */
-        }
-    </style>
-</head>
-<body>
-
-    <h1>cogie0806ニュース</h1>
-    <div class="nav-bar">
-        <a id="link-search" class="link-btn ai-btn" href="https://cogie0806.github.io/">ホームページへ戻る</a>
-    </div>
-
-    <h2>今月のメインニュース</h2>
-    <div id="news1" class="news-box">読み込み中...</div>
-
-    <h2>ゲーム・エンタメ</h2>
-    <div id="news2" class="news-box">読み込み中...</div>
+    <!-- Tailwind CSS & Google Fonts (Inter / Noto Sans JP) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <h2>その他</h2>
-    <div id="news3" class="news-box">読み込み中...</div>
+    <!-- アイコン用ライブラリ (Phosphor Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <script>
-        // テキストファイルを読み込んで表示する関数
-        function loadNews(file, elementId) {
-            fetch(file)
-                .then(response => {
-                    if (!response.ok) throw new Error('ファイルが見つかりません');
-                    return response.text();
-                })
-                .then(data => {
-                    document.getElementById(elementId).innerText = data;
-                })
-                .catch(error => {
-                    document.getElementById(elementId).innerText = "ニュースの読み込みに失敗しました。";
-                });
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Inter"', '"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col">
+
+    <!-- ヘッダーナビゲーション -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+            <!-- サイトロゴ・タイトル -->
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-sm">
+                    <i class="ph-bold ph-newspaper text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-bold tracking-tight leading-none">cogie0806ニュース</h1>
+                    <p id="current-date" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1"></p>
+                </div>
+            </div>
+
+            <!-- アクションボタン群 -->
+            <div class="flex items-center gap-2">
+                <!-- 再読み込みボタン -->
+                <button onclick="reloadAllNews()" title="ニュースを再読み込み" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition active:scale-95">
+                    <i id="reload-icon" class="ph-bold ph-arrows-clockwise text-lg"></i>
+                </button>
+
+
+                <!-- ホームページへ戻るボタン -->
+                <a href="https://cogie0806.github.io/" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-semibold px-3.5 py-2.5 rounded-xl shadow-sm transition active:scale-95">
+                    <i class="ph-bold ph-house text-base"></i>
+                    <span class="hidden sm:inline">ホームへ戻る</span>
+                    <span class="sm:hidden">ホーム</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツエリア -->
+    <main class="flex-grow max-w-3xl w-full mx-auto px-4 py-6 sm:py-8 space-y-6">
+
+        <!-- ニュース1：今月のメインニュース -->
+        <section class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80 overflow-hidden transition-all">
+            <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between bg-gradient-to-r from-blue-50/50 to-transparent dark:from-blue-950/20">
+                <div class="flex items-center gap-2.5">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
+                        <i class="ph-fill ph-star text-lg"></i>
+                    </span>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100">今月のメインニュース</h2>
+                </div>
+                <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300">注目</span>
+            </div>
+            <div class="p-5">
+                <div id="news1" class="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words text-slate-700 dark:text-slate-300">
+                    <!-- ローディング表示 -->
+                    <div class="animate-pulse space-y-2.5">
+                        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
+                        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+                        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-5/6"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ニュース2：ゲーム・エンタメ -->
+        <section class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80 overflow-hidden transition-all">
+            <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between bg-gradient-to-r from-emerald-50/50 to-transparent dark:from-emerald-950/20">
+                <div class="flex items-center gap-2.5">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400">
+                        <i class="ph-fill ph-game-controller text-lg"></i>
+                    </span>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100">ゲーム・エンタメ</h2>
+                </div>
+                <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300">エンタメ</span>
+            </div>
+            <div class="p-5">
+                <div id="news2" class="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words text-slate-700 dark:text-slate-300">
+                    <div class="animate-pulse space-y-2.5">
+                        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
+                        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ニュース3：その他 -->
+        <section class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80 overflow-hidden transition-all">
+            <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700/80 flex items-center justify-between bg-gradient-to-r from-amber-50/50 to-transparent dark:from-amber-950/20">
+                <div class="flex items-center gap-2.5">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400">
+                        <i class="ph-fill ph-info text-lg"></i>
+                    </span>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100">その他のお知らせ</h2>
+                </div>
+                <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/60 dark:text-amber-300">トピック</span>
+            </div>
+            <div class="p-5">
+                <div id="news3" class="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words text-slate-700 dark:text-slate-300">
+                    <div class="animate-pulse space-y-2.5">
+                        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+                        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-4/5"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- フッター -->
+    <footer class="border-t border-slate-200 dark:border-slate-800 py-6 mt-8 text-center text-xs text-slate-500 dark:text-slate-400">
+        <p>&copy; cogie0806ニュース. All rights reserved.</p>
+    </footer>
+
+    <!-- トースト通知（再読み込み完了時などに表示） -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-800 dark:bg-slate-700 text-white text-sm px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 z-50">
+        <i class="ph-fill ph-check-circle text-emerald-400 text-lg"></i>
+        <span id="toast-message">最新のニュースを読み込みました</span>
+    </div>
+
+    <script>
+        // プレビュー環境（外部txtが存在しない場合）用のサンプル記事データ
+        const SAMPLE_NEWS = {
+            'news1.txt': '【サンプル表示】cogie0806ニュースがリニューアルされました！\nスマートフォンでも見やすいデザインになり、ダークモードやワンタップ更新にも対応しています。\n\n※サーバー（GitHub Pagesなど）にアップロードすると、実際の news1.txt の内容が自動で読み込まれます。',
+            'news2.txt': '【サンプル表示】今月の注目ゲーム＆エンタメ情報をお届けします！\n最新のアップデート情報やおすすめタイトルを随時更新予定です。',
+            'news3.txt': '【サンプル表示】サイトメンテナンスのお知らせや、日常のちょっとしたトピックを掲載しています。'
+        };
+
+        // 今日の日付を表示する処理
+        function updateDateDisplay() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
+            document.getElementById('current-date').innerText = now.toLocaleDateString('ja-JP', options);
         }
 
-        // 実行（ニュース1〜3のすべてを読み込み）
-        loadNews('news1.txt', 'news1');
-        loadNews('news2.txt', 'news2');
-        loadNews('news3.txt', 'news3');
-    </script>
+        // テキストファイルを読み込んで表示する関数
+        async function loadNews(file, elementId) {
+            const element = document.getElementById(elementId);
+            const isPreviewEnv = window.location.protocol === 'blob:' || window.location.protocol === 'data:';
 
+            try {
+                // プレビュー環境（blob:など）では相対パスのfetchがURLパースエラーになるため処理を分岐
+                if (isPreviewEnv) {
+                    throw new Error('Preview environment detected');
+                }
+
+                // キャッシュを回避して常に最新のtxtを取得（cache: 'no-store' を使用）
+                const response = await fetch(file, { cache: 'no-store' });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.text();
+                
+                // 空ファイルだった場合のケア
+                if (!data.trim()) {
+                    element.innerHTML = `<span class="text-slate-400 dark:text-slate-500 italic">現在表示できるニュースはありません。</span>`;
+                } else {
+                    element.innerText = data;
+                }
+            } catch (error) {
+                // プレビュー環境の場合はコンソールエラーを出さずにサンプル記事を表示
+                if (isPreviewEnv && SAMPLE_NEWS[file]) {
+                    element.innerText = SAMPLE_NEWS[file];
+                    return;
+                }
+
+                console.error(`Error loading ${file}:`, error);
+                element.innerHTML = `
+                    <div class="flex items-center gap-2 text-rose-500 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 p-3 rounded-xl border border-rose-200 dark:border-rose-900/50">
+                        <i class="ph-bold ph-warning-circle text-lg shrink-0"></i>
+                        <span>ニュースの読み込みに失敗しました。（${file} が見つかりません）</span>
+                    </div>
+                `;
+            }
+        }
+
+        // すべてのニュースを読み込む関数
+        async function reloadAllNews(showNotification = false) {
+            const icon = document.getElementById('reload-icon');
+            icon.classList.add('animate-spin');
+
+            await Promise.all([
+                loadNews('news1.txt', 'news1'),
+                loadNews('news2.txt', 'news2'),
+                loadNews('news3.txt', 'news3')
+            ]);
+
+            setTimeout(() => {
+                icon.classList.remove('animate-spin');
+                if (showNotification) {
+                    showToast('ニュースを更新しました');
+                }
+            }, 400);
+        }
+
+        // トースト通知を表示する関数
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        // ダークモードの切り替え処理
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                icon.classList.replace('ph-sun', 'ph-moon');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                icon.classList.replace('ph-moon', 'ph-sun');
+            }
+        }
+
+        // 初期テーマの設定（システム設定または保存された設定を反映）
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const icon = document.getElementById('theme-icon');
+
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+                icon.classList.replace('ph-moon', 'ph-sun');
+            }
+        }
+
+        // ページ読み込み時の初期化処理
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            updateDateDisplay();
+            reloadAllNews(false);
+        });
+    </script>
 </body>
 </html>
